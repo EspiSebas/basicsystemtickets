@@ -14,7 +14,31 @@ exports.findById = async (id) => {
     `SELECT * FROM agents WHERE id = ?`,
     [id]
   );
-  return rows[0];
+
+  
+  if (rows.length === 0) {
+    return null;
+  }
+
+
+  const [countInProgress] = await pool.query(
+      `SELECT COUNT(*) as total FROM tickets
+      WHERE agent_id = ?
+      AND status = 'IN_PROGRESS'`,
+      [id]
+   );
+
+   const [resolvedRows] = await pool.query(
+      `SELECT COUNT(*) as total FROM tickets
+      WHERE agent_id = ?
+      AND status = 'RESOLVED'`,
+      [id]
+   );
+
+
+   return { ...rows[0],
+    in_progress: countInProgress[0].total,
+    resolved: resolvedRows[0].total}
 };
 
 exports.findAll = async () => {

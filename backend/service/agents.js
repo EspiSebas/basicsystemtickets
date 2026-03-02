@@ -12,14 +12,13 @@ exports.createAgent = async(data) => {
 
 
 exports.findById = async(id) => {
-
     const info = await agentRepository.findById(id)
 
     if(!info){
         throw new Error("The agents not found")
     }
 
-    return data;
+    return info;
 
 }
 

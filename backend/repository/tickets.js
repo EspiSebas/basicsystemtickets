@@ -4,7 +4,7 @@ exports.create = async (ticket) => {
   const [result] = await pool.query(
     `INSERT INTO tickets (title, description, client_id)
      VALUES (?, ?, ?)`,
-    [ticket.title, ticket.description, ticket.cliente_id]
+    [ticket.title, ticket.description, ticket.client_id]
   );
   return result.insertId;
 };
@@ -17,22 +17,45 @@ exports.findById = async (id) => {
   return rows[0];
 };
 
-exports.countInProgressByAgent = async (agente_id) => {
+exports.findAll = async () => {
+  const [rows] = await pool.query(
+    `SELECT * FROM tickets`
+  );
+  return rows;
+};
+
+
+exports.countInProgressByAgent = async (agent_id) => {
   const [rows] = await pool.query(
     `SELECT COUNT(*) as count
      FROM tickets
-     WHERE agente_id = ?
+     WHERE agent_id = ?
      AND status = 'IN_PROGRESS'`,
-    [agente_id]
+    [agent_id]
   );
   return rows[0].count;
 };
 
-exports.updateStatus = async (id, status, agente_id, resolution) => {
+exports.updateStatus = async (id, status, resolution) => {
+  if (status === "RESOLVED") {
+    await pool.query(
+      "UPDATE tickets SET status = ?, resolution = ? WHERE id = ?",
+      [status, resolution, id]
+    );
+  } else if (status === "IN_PROGRESS") {
+    await pool.query(
+      "UPDATE tickets SET status = ? WHERE id = ?",
+      [status, id]
+    );
+  }
+};
+
+
+exports.createAssing = async (id, agent_id) => {
   await pool.query(
     `UPDATE tickets
-     SET status = ?, agente_id = ?, resolution = ?
+     SET agent_id = ?
      WHERE id = ?`,
-    [status, agente_id, resolution, id]
+    [agent_id, id]
   );
 };

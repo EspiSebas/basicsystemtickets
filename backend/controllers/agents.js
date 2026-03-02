@@ -21,7 +21,7 @@ exports.getAll = async(req,res,next) => {
 
 exports.getById = async(req,res,next) => {
     try {
-        const agent = await agentService.getById(req.params.body)
+        const agent = await agentService.findById(req.params.id)
         res.json(agent)
     } catch (error) {
         next(error)
