@@ -22,7 +22,7 @@ exports.findById = async(id) => {
 exports.findAll = async() => {
     const data = await clientRepository.findAll()
 
-    if(length(data) == 0){
+    if(!data){
         return "There is not data";
     }
     

@@ -1,14 +1,13 @@
 const express = require('express')
 require('dotenv').config();
-require('./backend/config/connection')
-console.log(process.env.db_user);
-
+const router = require("./backend/router/routes")
+const errorHandler = require("./backend/middleware/error")
 var app = express()
 
-app.use('/',function(req,res){
-    res.send('Hola')
-})
 
+
+app.use(express.urlencoded({extended:false}))
+app.use(express.json())
+app.use('/', router())
+app.use(errorHandler);
 app.listen(3000);
-
-console.log('The app is listening to http://localhost:3000');

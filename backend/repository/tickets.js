@@ -1,8 +1,8 @@
-const pool = require('../config/db');
+const pool = require('../config/connection');
 
 exports.create = async (ticket) => {
   const [result] = await pool.query(
-    `INSERT INTO tickets (title, description, cliente_id)
+    `INSERT INTO tickets (title, description, client_id)
      VALUES (?, ?, ?)`,
     [ticket.title, ticket.description, ticket.cliente_id]
   );
