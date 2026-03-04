@@ -18,7 +18,7 @@ export const Clients = () => {
     return (
         <>
             <div className="container mt-4">
-                <h1>Users</h1>
+                <h1 className="text-center">Users</h1>
                 <TableView items={clients} />
             </div>
         </>
