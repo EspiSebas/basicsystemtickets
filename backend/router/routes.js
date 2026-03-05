@@ -22,6 +22,8 @@ module.exports = function(){
     router.get('/tickets/:id',tickets.getById)
     router.patch('/tickets/:id/assign',tickets.createAssign)
     router.patch('/tickets/:id/status',tickets.updateStatus)
+    router.get('/dashboard/',tickets.dashboard)
+    
 
     return router;
 }

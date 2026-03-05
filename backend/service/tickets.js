@@ -91,3 +91,9 @@ exports.updateStatus = async (id,status,resolution) => {
     const updateStatusInProgress = await ticketRepository.updateStatus(id,status,resolution)
     return { message: "Ticket changed successfully" };
 }
+
+
+exports.dashboard = async() => {
+    const data = await ticketRepository.dashboard()
+    return data;
+}

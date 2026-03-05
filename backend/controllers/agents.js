@@ -12,7 +12,7 @@ exports.create = async(req,res,next) => {
 
 exports.getAll = async(req,res,next) => {
     try {
-        const agents = await agentService.getAll()
+        const agents = await agentService.findAll()
         res.json(agents)
     } catch (err) {
         next(err)

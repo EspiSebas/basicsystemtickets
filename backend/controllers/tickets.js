@@ -52,3 +52,12 @@ exports.createAssign = async(req,res,next) => {
         next(error)
     }
 }
+
+exports.dashboard = async(req,res,next) => {
+    try {
+        const data = await ticketService.dashboard()
+        res.status(200).json(data)
+    } catch (error) {
+        next(error)
+    }
+}

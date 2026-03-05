@@ -19,7 +19,18 @@ exports.findById = async (id) => {
 
 exports.findAll = async () => {
   const [rows] = await pool.query(
-    `SELECT * FROM tickets`
+  `  SELECT 
+      t.id,
+      t.title,
+      c.name AS client_name,
+      a.name AS agent_name,
+      t.status,
+      t.resolution,
+      t.created_at
+    FROM tickets t
+    LEFT JOIN clients c ON t.client_id = c.id
+    LEFT JOIN agents a ON t.agent_id = a.id
+  `
   );
   return rows;
 };
@@ -59,3 +70,28 @@ exports.createAssing = async (id, agent_id) => {
     [agent_id, id]
   );
 };
+
+
+exports.dashboard = async() => {
+  const [totalTickets] = await pool.query(
+      `SELECT COUNT(*) as total FROM tickets`
+  );
+  const [totalOpen] = await pool.query(
+      `SELECT COUNT(*) as total FROM tickets where status = 'OPEN'`
+  );
+  const [totalResolved] = await pool.query(
+      `SELECT COUNT(*) as total FROM tickets where status = 'RESOLVED'`
+  );
+  const [totalInProgress] = await pool.query(
+      `SELECT COUNT(*) as total FROM tickets where status = 'IN_PROGRESS'`
+  );
+  
+  return {
+    total: totalTickets[0].total,
+    open: totalOpen[0].total,
+    resolved: totalResolved[0].total,
+    inProgress: totalInProgress[0].total
+  };
+  
+  
+}
