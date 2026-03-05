@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
-import { getAllTickets, updateStatus, createAssign } from "../api/endpoint.api";
+import { getAllTickets, updateStatus, createAssign, getAllAgents } from "../api/endpoint.api";
 import { TableWithActions } from "../components/TableViewActions";
 import ModalView from '../components/ModalView'
 
 export const Tickets = () => {
   const [tickets, setTickets] = useState<any[]>([]);
   const [loadingTickets, setLoadingTickets] = useState(true);
+
+  const [agent, setAgent] = useState<any[]>([]);
+  const [loadingAgent, setLoadingAgent] = useState(true);
 
   const [ticketToStatus, setTicketToStatus] = useState<any | null>(null);
   const [ticketToAssign, setTicketToAssign] = useState<any | null>(null);
@@ -20,12 +23,24 @@ export const Tickets = () => {
       .then((res) => {
         setTickets(res.data);
         setLoadingTickets(false);
-        console.log(res.data)
       })
       .catch((err) => {
         console.error(err);
         setLoadingTickets(false);
       });
+
+    getAllAgents()
+      .then((res) => {
+        setAgent(res.data);
+        setLoadingAgent(false);
+
+      })
+      .catch((err) => {
+        console.error(err);
+        setLoadingAgent(false);
+      });
+
+
   }, []);
 
 
@@ -56,12 +71,12 @@ export const Tickets = () => {
     }
   };
 
- 
+
   const handleAssignAgent = async () => {
     if (!ticketToAssign) return;
 
     try {
-      await createAssign(ticketToAssign.id, agentId);
+      await createAssign(ticketToAssign.id, { agentId: agentId });
 
       setTickets(
         tickets.map((t) =>
@@ -83,7 +98,21 @@ export const Tickets = () => {
   return (
     <>
       <div className="container mt-4">
-        <h2 className="mb-4 fw-bold text-center">Tickets</h2>
+        <div className="d-flex justify-content-between align-items-center mb-4">
+
+          <div>
+            <h2 className="fw-bold mb-0">Tickets</h2>
+            <small className="text-muted">
+              Manage your registered tickets
+            </small>
+          </div>
+
+          <button className="btn btn-danger px-4 py-2 fw-semibold shadow-sm rounded-pill">
+            <i className="bi bi-person-plus-fill me-2"></i>
+            Add Ticket
+          </button>
+
+        </div>
 
         {loadingTickets ? (
           <p>Cargando tickets...</p>
@@ -96,7 +125,7 @@ export const Tickets = () => {
         )}
       </div>
 
-     
+
       {ticketToStatus && (
         <ModalView
           show={!!ticketToStatus}
@@ -137,7 +166,7 @@ export const Tickets = () => {
         />
       )}
 
-    
+
       {ticketToAssign && (
         <ModalView
           show={!!ticketToAssign}
@@ -146,12 +175,19 @@ export const Tickets = () => {
           content={
             <div>
               <label className="form-label">Agent ID</label>
-              <input
-                type="number"
+              <select
                 className="form-control mb-3"
                 value={agentId}
                 onChange={(e) => setAgentId(e.target.value)}
-              />
+              >
+                <option value="">Select a user</option>
+
+                {agent.map((user) => (
+                  <option key={user.id} value={user.id}>
+                    {user.name}
+                  </option>
+                ))}
+              </select>
 
               <button
                 className="btn btn-primary"

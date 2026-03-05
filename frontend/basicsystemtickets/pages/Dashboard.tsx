@@ -1,6 +1,6 @@
 import { Pie } from "react-chartjs-2";
 import { useState, useEffect } from "react"
-import { getInfoDashboard } from "../api/endpoint.api";
+import { getAllTickets, getInfoDashboard } from "../api/endpoint.api";
 import { CardInfo } from "../components/CardInfo";
 import {
     Chart as ChartJS,
@@ -17,6 +17,8 @@ export const Dashboard = () => {
         inProgress: 0,
         resolved: 0
     });
+    const [tickets, setTickets] = useState<any[]>([]);
+    const [loadingTickets, setLoadingTickets] = useState(true);
     const [loadingDashboard, setLoadingDashboard] = useState(true);
 
     useEffect(() => {
@@ -24,11 +26,21 @@ export const Dashboard = () => {
             .then((res) => {
                 setDashboard(res.data);
                 setLoadingDashboard(false);
-                console.log(res.data)
+
             })
             .catch((err) => {
                 console.error(err);
                 setLoadingDashboard(false);
+            });
+
+        getAllTickets()
+            .then((res) => {
+                setTickets(res.data)
+                setLoadingTickets(false)
+            })
+            .catch((err) => {
+                console.error(err);
+                setLoadingTickets(false);
             });
     }, []);
 
@@ -103,12 +115,19 @@ export const Dashboard = () => {
                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>Subject</th>
+                                        <th>Name</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {/* aquí luego mapeas los tickets */}
+                                    {tickets.slice(0, 5).map(ticket => (
+                                        <tr key={ticket.id}>
+                                            <td>{ticket.id}</td>
+                                            <td>{ticket.title}</td>
+                                            <td>{ticket.status}</td>
+                                            
+                                        </tr>
+                                    ))}
                                 </tbody>
                             </table>
 

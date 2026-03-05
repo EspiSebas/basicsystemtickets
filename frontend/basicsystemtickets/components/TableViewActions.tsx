@@ -4,8 +4,8 @@ interface Ticket {
   id: number;
   title: string;
   status: "OPEN" | "IN_PROGRESS" | "RESOLVED";
-  client_id: number;
-  agent_id?: number| null;
+  client_name: String;
+  agent_name?: String| null;
   resolution:string;
   created_at: string;
 }
@@ -51,8 +51,8 @@ export const TableWithActions = ({ items, onAssign, onUpdateStatus }: Props) => 
           <tr key={item.id}>
             <td>{item.id}</td>
             <td>{item.title}</td>
-            <td>{item.client_id}</td>
-            <td>{item.agent_id ?? "-"}</td>
+            <td>{item.client_name}</td>
+            <td>{item.agent_name ?? "-"}</td>
 
             <td>
               <Badge bg={getStatusVariant(item.status)}>
