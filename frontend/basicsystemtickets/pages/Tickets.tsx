@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getAllTickets, updateStatus, createAssign, getAllAgents } from "../api/endpoint.api";
+import { getAllTickets, updateStatus, createAssign, getAllAgents, createTicket, getAllClients } from "../api/endpoint.api";
 import { TableWithActions } from "../components/TableViewActions";
 import ModalView from '../components/ModalView'
 
@@ -17,18 +17,30 @@ export const Tickets = () => {
   const [resolution, setResolution] = useState("");
   const [agentId, setAgentId] = useState("");
 
+  const [client, setClient] = useState<any[]>([]);
+  const [loadingClient, setLoadingClient] = useState(true);
 
+  const [showAddModal, setShowAddModal] = useState(false)
+  const [newTicket, setNewTicket] = useState({
+    title: "",
+    description: "",
+    client_id: 0
+  })
+
+  const fetchTickets = async() => {
+    try {
+      const res =  await getAllTickets()
+      setTickets(res.data);
+      setLoadingTickets(false);
+    } catch (error) {
+      console.error(error);
+      setLoadingTickets(false);
+    }
+  }
+
+  
   useEffect(() => {
-    getAllTickets()
-      .then((res) => {
-        setTickets(res.data);
-        setLoadingTickets(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setLoadingTickets(false);
-      });
-
+    fetchTickets();
     getAllAgents()
       .then((res) => {
         setAgent(res.data);
@@ -40,6 +52,16 @@ export const Tickets = () => {
         setLoadingAgent(false);
       });
 
+    getAllClients()
+      .then((res) => {
+        setClient(res.data);
+        setLoadingClient(false);
+
+      })
+      .catch((err) => {
+        console.error(err);
+        setLoadingClient(false);
+      });
 
   }, []);
 
@@ -95,9 +117,21 @@ export const Tickets = () => {
     }
   };
 
+  const handleCreateTicket = async () => {
+    try {
+      const res = await createTicket(newTicket)
+      fetchTickets()
+      alert("Created correctly")
+    } catch (error) {
+      console.error(error);
+    }
+    setShowAddModal(false)
+    setNewTicket({ title: "", description: "", client_id: 0 })
+  }
+
   return (
     <>
-      <div className="container mt-4">
+      <div className="container-fluid mt-4">
         <div className="d-flex justify-content-between align-items-center mb-4">
 
           <div>
@@ -107,7 +141,9 @@ export const Tickets = () => {
             </small>
           </div>
 
-          <button className="btn btn-danger px-4 py-2 fw-semibold shadow-sm rounded-pill">
+          <button
+            onClick={() => setShowAddModal(true)}
+            className="btn btn-danger px-4 py-2 fw-semibold shadow-sm rounded-pill">
             <i className="bi bi-person-plus-fill me-2"></i>
             Add Ticket
           </button>
@@ -123,6 +159,76 @@ export const Tickets = () => {
             onAssign={setTicketToAssign}
           />
         )}
+
+        <ModalView
+        show={showAddModal}
+        onClose={() => {
+          setShowAddModal(false)
+        }}
+        title="Create New Ticket"
+        content={
+          <form>
+            <div className="mb-3">
+              <label className="form-label">Title</label>
+              <input
+                type="text"
+                className="form-control"
+                value={newTicket.title}
+                onChange={(e) =>
+                  setNewTicket({ ...newTicket, title: e.target.value })
+                }
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">Description</label>
+              <input
+                type="text"
+                className="form-control"
+                value={newTicket.description}
+                onChange={(e) =>
+                  setNewTicket({ ...newTicket, description: e.target.value })
+                }
+              />
+            </div>
+
+            <select
+              className="form-control mb-3"
+              value={newTicket.client_id}
+              onChange={(e) => setNewTicket({...newTicket, client_id :Number(e.target.value)})}
+            >
+              <option value="">Select a client</option>
+
+              {client.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.name}
+                </option>
+              ))}
+            </select>
+            <small className="text-muted mt-2">
+    Select the client who created the ticket
+  </small>
+
+            <div className="d-flex justify-content-end gap-2">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setShowAddModal(false)}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                className="btn btn-success"
+                onClick={handleCreateTicket}
+              >
+                Save Agent
+              </button>
+            </div>
+          </form>
+        }
+      />
       </div>
 
 
@@ -199,6 +305,9 @@ export const Tickets = () => {
           }
         />
       )}
+
+
+      
     </>
   );
 };

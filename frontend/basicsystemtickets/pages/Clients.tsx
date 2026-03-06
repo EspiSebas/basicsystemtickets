@@ -12,7 +12,7 @@ export const Clients = () => {
     const [selectedClient, setSelectedClient] = useState<any>(null);
     const [loadingInfoClient, setLoadingInfoClient] = useState(false);
     const [showAddModal, setShowAddModal] = useState(false);
-     const [newClient, setNewClient] = useState({
+    const [newClient, setNewClient] = useState({
         name: "",
         email: ""
     });

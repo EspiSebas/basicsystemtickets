@@ -2,7 +2,7 @@ import { NavLink } from "react-router-dom";
 
 export const NavBar = () => {
   return (
-    <nav className="col-md-2 d-none d-md-block bg-dark sidebar min-vh-100 p-4">
+    <nav className="col-md-2 d-none d-md-block bg-dark sidebar text-white p-3 vh-100">
       
       <h4 className="text-white text-center mb-4 fw-bold">
         🎫 System Tickets
